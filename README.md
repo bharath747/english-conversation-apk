@@ -1,14 +1,14 @@
-# Little English Friends
+# Little English Friends - Native Android
 
-Offline-first English conversation learning app for young children.
+A pure native Android (Kotlin) English conversation learning app for children.
 
 ## Features
-- Built-in conversation lessons
-- Listen and repeat using device speech
-- Offline PWA support
-- Stars and progress stored locally
-- Capacitor Android wrapper
-- GitHub Actions APK build
+- Offline built-in lessons
+- Android Text-to-Speech
+- Greetings, Family, School and Food lessons
+- Conversation practice
+- Star rewards
+- No PWA, web app, Node.js or Capacitor
 
 ## Build APK
-Push to `main` or run the **Build Android APK** workflow manually. Download the generated APK from the workflow artifacts.
+GitHub Actions builds a debug APK and uploads `Little-English-Friends-APK` as an artifact.
