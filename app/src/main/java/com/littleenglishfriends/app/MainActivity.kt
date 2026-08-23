@@ -6,8 +6,11 @@ import android.speech.tts.TextToSpeech
 import android.view.View
 import android.widget.Button
 import android.widget.ProgressBar
+import android.widget.ScrollView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import java.util.Locale
 
 class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
@@ -21,13 +24,25 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        // Keep app content clear of Android 15 status and navigation bars.
+        val scroll = findViewById<ScrollView>(R.id.rootScroll)
+        val density = resources.displayMetrics.density
+        val side = (14 * density).toInt()
+        ViewCompat.setOnApplyWindowInsetsListener(scroll) { view, insets ->
+            val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            view.setPadding(side, bars.top + side, side, bars.bottom + side)
+            insets
+        }
+        ViewCompat.requestApplyInsets(scroll)
+
         lessons = OfflineData.lessons(this)
         game = OfflineData.games(this)
         tts = TextToSpeech(this, this)
 
         findViewById<Button>(R.id.learn).setOnClickListener { showPanel(R.id.learnPanel) }
-        findViewById<Button>(R.id.games).setOnClickListener { showPanel(R.id.gamePanel); newGame() }
-        findViewById<Button>(R.id.talkTab).setOnClickListener { showPanel(R.id.talkPanel) }
+        findViewById<Button>(R.id.games).setOnClickListener { showPanel(R.id.gamePanel); newGame(); scrollToContent() }
+        findViewById<Button>(R.id.talkTab).setOnClickListener { showPanel(R.id.talkPanel); scrollToContent() }
         findViewById<Button>(R.id.nextWord).setOnClickListener { lessonIndex = (lessonIndex + 1) % lessons.size; bindLesson() }
         findViewById<Button>(R.id.prevWord).setOnClickListener { lessonIndex = (lessonIndex - 1 + lessons.size) % lessons.size; bindLesson() }
         findViewById<Button>(R.id.playEnglish).setOnClickListener { speak(lessons[lessonIndex].sentence, Locale.US) }
@@ -41,6 +56,12 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
         }
         findViewById<Button>(R.id.nextGame).setOnClickListener { newGame() }
         bindLesson()
+    }
+
+    private fun scrollToContent() {
+        findViewById<ScrollView>(R.id.rootScroll).post {
+            findViewById<ScrollView>(R.id.rootScroll).smoothScrollTo(0, 0)
+        }
     }
 
     private fun showPanel(id: Int) {
