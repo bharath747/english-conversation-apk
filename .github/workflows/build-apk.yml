@@ -16,6 +16,15 @@ jobs:
           cache: gradle
       - name: Prepare complete offline lesson and game data
         run: python3 tools/prepare_data.py
+      - name: Fix XML entities
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('app/src/main/res/layout/activity_main.xml')
+          s = p.read_text(encoding='utf-8')
+          s = s.replace('Tap & talk', 'Tap &amp; talk')
+          p.write_text(s, encoding='utf-8')
+          PY
       - name: Verify offline content
         run: |
           test -s app/src/main/assets/lessons.tsv
